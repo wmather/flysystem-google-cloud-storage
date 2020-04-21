@@ -139,12 +139,13 @@ class GoogleStorageAdapter extends AbstractAdapter
     protected function getOptionsFromConfig(Config $config)
     {
         $options = [];
-
-        if ($visibility = $config->get('visibility')) {
+        
+        $visibility = $config->get('visibility');
+        if ($visibility === 'public' || $visibility === 'private') {
             $options['predefinedAcl'] = $this->getPredefinedAclForVisibility($visibility);
-        } else {
+        } elseif ($visibility !== 'inherit') {
             // if a file is created without an acl, it isn't accessible via the console
-            // we therefore default to private
+            // we therefore default to private -- BUT only if we haven't enabled inherit visibility for bucket-wide uniform ACLs
             $options['predefinedAcl'] = $this->getPredefinedAclForVisibility(AdapterInterface::VISIBILITY_PRIVATE);
         }
 
